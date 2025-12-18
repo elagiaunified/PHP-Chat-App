@@ -1,13 +1,14 @@
+<!DOCTYPE html>
 <html lang="en" class="h-full">
- <head>
-  <style>@view-transition { navigation: auto; }</style>
- </head>
- <body class="h-full">
-  <iframe src="index.html" width="100%" height="600px" frameborder="0"></iframe>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Real-Time Chat Application</title>
   <style>
+    @view-transition {
+      navigation: auto;
+    }
+    
     body {
       box-sizing: border-box;
     }
@@ -64,55 +65,106 @@
       }
     }
   </style>
-  <div id="app" class="h-full w-full flex flex-col overflow-auto"><!-- Chat Header -->
-   <header id="chat-header" class="px-6 py-4 border-b-2 shadow-sm flex justify-between items-center">
-    <div>
-     <h1 id="app-title" class="text-2xl font-bold mb-1">💬 Real-Time Chat</h1>
-     <p id="welcome-message" class="text-sm opacity-80">Connect and chat with others in real-time</p>
-    </div>
-    <div class="flex gap-2"><button id="export-btn" class="px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80" title="Export chat"> 📥 Export </button> <button id="import-btn" class="px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80" title="Import chat"> 📤 Import </button> <button id="settings-btn" class="px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80" title="Settings"> ⚙️ </button>
-    </div><input type="file" id="import-file" accept=".json" style="display: none;">
-   </header><!-- Messages Container -->
-   <main id="messages-container" class="flex-1 px-6 py-4 overflow-y-auto chat-scroll">
-    <div id="messages-list" class="space-y-3 max-w-4xl mx-auto"><!-- Messages will be inserted here -->
-    </div>
-   </main><!-- Input Area -->
-   <footer id="input-area" class="border-t-2 px-6 py-4">
-    <form id="chat-form" class="max-w-4xl mx-auto">
-     <div class="flex gap-3 flex-wrap sm:flex-nowrap"><label for="username-input" class="sr-only">Your Name</label> <input type="text" id="username-input" placeholder="Your name" class="px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 w-full sm:w-32 transition-all" required maxlength="20"> <label for="message-input" class="sr-only">Type your message</label> <input type="text" id="message-input" placeholder="Type your message..." class="flex-1 px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all min-w-0" required maxlength="500"> <button type="submit" id="send-button" class="px-6 py-3 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"> Send </button>
-     </div>
-     <div id="char-counter" class="text-xs text-right mt-2 opacity-70">
-      0/500 characters
-     </div>
-    </form>
-   </footer>
-  </div><!-- Settings Overlay -->
-  <div id="settings-overlay" class="settings-overlay"></div><!-- Settings Panel -->
-  <aside id="settings-panel" class="settings-panel">
-   <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-     <h2 class="text-2xl font-bold">Settings</h2><button id="close-settings" class="text-2xl hover:opacity-70">×</button>
-    </div><!-- Appearance Settings -->
-    <section class="mb-6">
-     <h3 class="text-lg font-semibold mb-3">Appearance</h3>
-     <div class="mb-4"><label for="title-input" class="block text-sm font-medium mb-2">Chat Title</label> <input type="text" id="title-input" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2" maxlength="50">
-     </div>
-     <div class="mb-4"><label for="welcome-input" class="block text-sm font-medium mb-2">Welcome Message</label> <input type="text" id="welcome-input" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2" maxlength="100">
-     </div>
-     <div class="mb-4"><label class="block text-sm font-medium mb-2">Theme Presets</label>
-      <div class="grid grid-cols-2 gap-2"><button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="blue">Blue Ocean</button> <button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="dark">Dark Mode</button> <button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="sunset">Sunset</button> <button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="forest">Forest</button>
+</head>
+<body class="h-full">
+  <div id="app" class="h-full w-full flex flex-col overflow-auto">
+    <!-- Chat Header -->
+    <header id="chat-header" class="px-6 py-4 border-b-2 shadow-sm flex justify-between items-center">
+      <div>
+        <h1 id="app-title" class="text-2xl font-bold mb-1">💬 Real-Time Chat</h1>
+        <p id="welcome-message" class="text-sm opacity-80">Connect and chat with others in real-time</p>
       </div>
-     </div>
-     <div class="mb-4"><label for="font-select" class="block text-sm font-medium mb-2">Font Family</label> <select id="font-select" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"> <option value="system-ui">System Default</option> <option value="Arial">Arial</option> <option value="Helvetica">Helvetica</option> <option value="Times New Roman">Times New Roman</option> <option value="Georgia">Georgia</option> <option value="Courier New">Courier New</option> <option value="Verdana">Verdana</option> </select>
-     </div>
-     <div class="mb-4"><label for="font-size-input" class="block text-sm font-medium mb-2">Font Size: <span id="font-size-display">16</span>px</label> <input type="range" id="font-size-input" min="12" max="24" step="1" class="w-full">
-     </div>
-    </section><!-- Data Management -->
-    <section class="mb-6">
-     <h3 class="text-lg font-semibold mb-3">Data Management</h3><button id="clear-all-btn" class="w-full px-4 py-2 rounded-lg font-semibold bg-red-500 text-white hover:bg-red-600 transition-all"> Clear All Messages </button>
-     <p class="text-xs mt-2 opacity-70">This will permanently delete all chat messages</p>
-    </section><!-- Save Settings Button --> <button id="save-settings-btn" class="w-full px-4 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"> Save Settings </button>
-   </div>
+      <div class="flex gap-2">
+        <button id="export-btn" class="px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80" title="Export chat"> 📥 Export </button>
+        <button id="import-btn" class="px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80" title="Import chat"> 📤 Import </button>
+        <button id="settings-btn" class="px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80" title="Settings"> ⚙️ </button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display: none;">
+    </header>
+
+    <!-- Messages Container -->
+    <main id="messages-container" class="flex-1 px-6 py-4 overflow-y-auto chat-scroll">
+      <div id="messages-list" class="space-y-3 max-w-4xl mx-auto">
+        <!-- Messages will be inserted here -->
+      </div>
+    </main>
+
+    <!-- Input Area -->
+    <footer id="input-area" class="border-t-2 px-6 py-4">
+      <form id="chat-form" class="max-w-4xl mx-auto">
+        <div class="flex gap-3 flex-wrap sm:flex-nowrap">
+          <label for="username-input" class="sr-only">Your Name</label>
+          <input type="text" id="username-input" placeholder="Your name" class="px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 w-full sm:w-32 transition-all" required maxlength="20">
+          <label for="message-input" class="sr-only">Type your message</label>
+          <input type="text" id="message-input" placeholder="Type your message..." class="flex-1 px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 transition-all min-w-0" required maxlength="500">
+          <button type="submit" id="send-button" class="px-6 py-3 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"> Send </button>
+        </div>
+        <div id="char-counter" class="text-xs text-right mt-2 opacity-70">
+          0/500 characters
+        </div>
+      </form>
+    </footer>
+  </div>
+
+  <!-- Settings Overlay -->
+  <div id="settings-overlay" class="settings-overlay"></div>
+
+  <!-- Settings Panel -->
+  <aside id="settings-panel" class="settings-panel">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Settings</h2>
+        <button id="close-settings" class="text-2xl hover:opacity-70">×</button>
+      </div>
+
+      <!-- Appearance Settings -->
+      <section class="mb-6">
+        <h3 class="text-lg font-semibold mb-3">Appearance</h3>
+        <div class="mb-4">
+          <label for="title-input" class="block text-sm font-medium mb-2">Chat Title</label>
+          <input type="text" id="title-input" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2" maxlength="50">
+        </div>
+        <div class="mb-4">
+          <label for="welcome-input" class="block text-sm font-medium mb-2">Welcome Message</label>
+          <input type="text" id="welcome-input" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2" maxlength="100">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Theme Presets</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="blue">Blue Ocean</button>
+            <button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="dark">Dark Mode</button>
+            <button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="sunset">Sunset</button>
+            <button class="theme-btn px-3 py-2 rounded-lg border-2 text-sm font-medium hover:shadow" data-theme="forest">Forest</button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="font-select" class="block text-sm font-medium mb-2">Font Family</label>
+          <select id="font-select" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2">
+            <option value="system-ui">System Default</option>
+            <option value="Arial">Arial</option>
+            <option value="Helvetica">Helvetica</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Verdana">Verdana</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="font-size-input" class="block text-sm font-medium mb-2">Font Size: <span id="font-size-display">16</span>px</label>
+          <input type="range" id="font-size-input" min="12" max="24" step="1" class="w-full">
+        </div>
+      </section>
+
+      <!-- Data Management -->
+      <section class="mb-6">
+        <h3 class="text-lg font-semibold mb-3">Data Management</h3>
+        <button id="clear-all-btn" class="w-full px-4 py-2 rounded-lg font-semibold bg-red-500 text-white hover:bg-red-600 transition-all"> Clear All Messages </button>
+        <p class="text-xs mt-2 opacity-70">This will permanently delete all chat messages</p>
+      </section>
+
+      <!-- Save Settings Button -->
+      <button id="save-settings-btn" class="w-full px-4 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"> Save Settings </button>
+    </div>
   </aside>
   <script>
     // Configuration
